@@ -1,7 +1,9 @@
 plugins {
     id 'org.springframework.boot' version '2.2.7.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id "io.freefair.lombok" version "5.0.0"
     id 'java'
+    id 'idea'
 }
 
 group = 'com.michalak'
@@ -19,9 +21,10 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.apache.logging.log4j:log4j-api:2.13.2'
+    implementation 'org.apache.logging.log4j:log4j-core:2.13.2'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation('org.junit.jupiter:junit-jupiter:5.6.2')
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
