@@ -33,7 +33,7 @@ class CurrenciesControllerTest {
                 .thenReturn(Mono.just(CURRENCY_RATES_DTO));
 
         //when
-        WebTestClient.BodyContentSpec bodyContentSpec = webTestClient.get()
+        webTestClient.get()
                 .uri("/currencies/{currency}", CURRENCY_SYMBOL)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
