@@ -1,0 +1,12 @@
+{
+  "id": "bitcoin",
+  "symbol": "btc",
+  "name": "Bitcoin",
+  "market_data": {
+    "current_price": {
+      "eth": 46.830676,
+      "ltc": 212.581,
+      "usd": 9061.3
+    }
+  }
+}
