@@ -2,28 +2,17 @@ package com.michalak.cryptoexchange.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.michalak.cryptoexchange.valueobject.Rate;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-import java.util.List;
-
+import static com.michalak.cryptoexchange.TestDataProvider.CURRENCY_RATES_DTO;
+import static com.michalak.cryptoexchange.TestDataProvider.CURRENCY_RATES_RESPONSE_JSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CurrencyRatesDtoSerializerTest {
 
     private ObjectMapper objectMapper;
-
-    private final CurrencyRatesDto SERIALIZED_SUBJECT = CurrencyRatesDto.of(
-            "BTC",
-            List.of(
-                    Rate.of("USDT", new BigDecimal("0.3321")),
-                    Rate.of("ETH", new BigDecimal("0.2911"))
-            ));
-
-    private final String EXPECTED_RESULT = "{\"source\":\"BTC\",\"rates\":{\"USDT\":0.3321,\"ETH\":0.2911}}";
 
     @BeforeEach
     void setUp() {
@@ -38,9 +27,9 @@ class CurrencyRatesDtoSerializerTest {
     @SneakyThrows
     void canSerializeCorrectly() {
         //when
-        String result = objectMapper.writeValueAsString(SERIALIZED_SUBJECT);
+        String result = objectMapper.writeValueAsString(CURRENCY_RATES_DTO);
 
         //then
-        assertEquals(EXPECTED_RESULT, result);
+        assertEquals(CURRENCY_RATES_RESPONSE_JSON, result);
     }
 }
