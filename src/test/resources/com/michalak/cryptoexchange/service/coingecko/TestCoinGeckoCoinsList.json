@@ -1,0 +1,27 @@
+[
+  {
+    "id": "bitcoin",
+    "symbol": "btc",
+    "name": "bitcoin"
+  },
+  {
+    "id": "zcash",
+    "symbol": "zec",
+    "name": "Zcash"
+  },
+  {
+    "id": "ethereum",
+    "symbol": "eth",
+    "name": "Ethereum"
+  },
+  {
+    "id": "litecoin",
+    "symbol": "ltc",
+    "name": "Litecoin"
+  },
+  {
+    "id": "tether",
+    "symbol": "usdt",
+    "name": "Tether"
+  }
+]

@@ -8,16 +8,18 @@ import java.util.List;
 
 public class TestDataProvider {
 
-    public static final String CURRENCY_SYMBOL = "Bitcoin";
+    public static final String CURRENCY_SYMBOL = "BTC";
+    public static final String CURRENCY_ID = "bitcoin";
 
     public static final CurrencyRatesDto CURRENCY_RATES_DTO = CurrencyRatesDto.of(
-            "BTC",
+            CURRENCY_ID,
             List.of(
-                    Rate.of("USDT", new BigDecimal("0.3321")),
-                    Rate.of("ETH", new BigDecimal("0.2911"))
-            ));
+                    Rate.of("usd", new BigDecimal("9061.3")),
+                    Rate.of("eth", new BigDecimal("46.830676")),
+                    Rate.of("ltc", new BigDecimal("212.581"))
+                    ));
 
     public static final String CURRENCY_RATES_RESPONSE_JSON =
-            "{\"source\":\"BTC\",\"rates\":{\"USDT\":0.3321,\"ETH\":0.2911}}";
+            "{\"source\":\"bitcoin\",\"rates\":{\"usd\":9061.3,\"eth\":46.830676,\"ltc\":212.581}}";
 
 }

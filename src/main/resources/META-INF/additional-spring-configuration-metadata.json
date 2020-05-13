@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "coingecko.url.list.currencies",
+      "type": "java.lang.String",
+      "description": "URL to list available coins in CoinGecko."
+    },
+    {
+      "name": "coingecko.url.currency.data",
+      "type": "java.lang.String",
+      "description": "URL to get currency details in CoinGecko."
+    }
+  ]
+}
