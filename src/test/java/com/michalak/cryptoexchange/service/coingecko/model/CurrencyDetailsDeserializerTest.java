@@ -38,7 +38,7 @@ class CurrencyDetailsDeserializerTest {
 
     @Test
     @SneakyThrows
-    void canSerializeCorrectly() {
+    void canDeserializeCorrectly() {
         //given
         String jsonToBeDeserialized = getJsonResource();
 
