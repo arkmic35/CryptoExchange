@@ -3,6 +3,7 @@ package com.michalak.cryptoexchange.dto;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.michalak.cryptoexchange.valueobject.Rate;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ public class CurrencyRatesDtoSerializer extends StdSerializer<CurrencyRatesDto> 
 
         gen.writeObjectFieldStart("rates");
 
-        for (CurrencyRatesDto.Rate rate : value.getRates()) {
+        for (Rate rate : value.getRates()) {
             gen.writeNumberField(rate.getQuoteCurrency(), rate.getRate());
         }
         gen.writeEndObject();
