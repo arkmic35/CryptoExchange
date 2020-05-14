@@ -1,6 +1,8 @@
 package com.michalak.cryptoexchange.controller;
 
+import com.michalak.cryptoexchange.dto.CurrenciesToBeExchangedDto;
 import com.michalak.cryptoexchange.dto.CurrencyRatesDto;
+import com.michalak.cryptoexchange.dto.ExchangeDataDto;
 import com.michalak.cryptoexchange.service.ExchangeAPI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,5 +28,12 @@ public class CurrenciesController {
         } else {
             return exchangeAPI.fetchRates(quoteCurrency, baseCurrenciesFilter);
         }
+    }
+
+    @PostMapping("exchange")
+    public Mono<List<ExchangeDataDto>> exchangeCurrency(@RequestBody CurrenciesToBeExchangedDto currenciesToBeExchanged) {
+        log.info("POST /currencies/exchange currenciesToBeExchanged: {}", currenciesToBeExchanged);
+
+        return exchangeAPI.exchange(currenciesToBeExchanged);
     }
 }

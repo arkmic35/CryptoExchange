@@ -1,0 +1,12 @@
+{
+  "id": "ethereum",
+  "symbol": "eth",
+  "name": "Ethereum",
+  "market_data": {
+    "current_price": {
+      "btc": 0.02069815,
+      "usd": 200.01,
+      "ltc": 4.570852
+    }
+  }
+}

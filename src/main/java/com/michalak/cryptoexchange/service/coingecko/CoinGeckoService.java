@@ -1,18 +1,25 @@
 package com.michalak.cryptoexchange.service.coingecko;
 
+import com.michalak.cryptoexchange.dto.CurrenciesToBeExchangedDto;
 import com.michalak.cryptoexchange.dto.CurrencyRatesDto;
+import com.michalak.cryptoexchange.dto.ExchangeDataDto;
 import com.michalak.cryptoexchange.exception.CurrencyNotFoundException;
 import com.michalak.cryptoexchange.service.ExchangeAPI;
 import com.michalak.cryptoexchange.service.coingecko.model.CurrencyDetails;
 import com.michalak.cryptoexchange.service.coingecko.model.SupportedCurrency;
+import com.michalak.cryptoexchange.valueobject.Rate;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +27,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Log4j2
 public class CoinGeckoService implements ExchangeAPI {
+    private final static MathContext FEE_ROUNDING_MATH_CONTEXT = new MathContext(8, RoundingMode.CEILING);
+    private final static MathContext AMOUNT_ROUNDING_MATH_CONTEXT = new MathContext(8, RoundingMode.FLOOR);
+
     @Value("${coingecko.url.list.currencies}")
     private String listCurrenciesPath;
 
@@ -42,6 +52,24 @@ public class CoinGeckoService implements ExchangeAPI {
                 .flatMap(quoteCurrencyId -> fetchFilteredCurrencyRates(quoteCurrencyId, baseCurrenciesFilter));
     }
 
+    @Override
+    public Mono<List<ExchangeDataDto>> exchange(CurrenciesToBeExchangedDto currenciesToBeExchanged) {
+        String baseCurrencySymbol = currenciesToBeExchanged.getFrom();
+        BigDecimal baseCurrencyAmount = currenciesToBeExchanged.getAmount();
+
+        List<String> quoteCurrenciesSymbols = currenciesToBeExchanged.getTo();
+
+        return Flux.fromIterable(quoteCurrenciesSymbols)
+                .flatMap(this::fetchCurrencyId)
+                .flatMap(quoteCurrencyId -> fetchFilteredCurrencyRates(quoteCurrencyId, List.of(baseCurrencySymbol)))
+                .map(ratesDto ->
+                        calculateExchangeDataFor(
+                                ratesDto.getQuoteCurrency(),
+                                baseCurrencyAmount,
+                                ratesDto.getRates().iterator().next()))
+                .collectList();
+    }
+
     private Mono<String> fetchCurrencyId(String currencySymbol) {
         return WebClient.create(listCurrenciesPath)
                 .get()
@@ -56,11 +84,11 @@ public class CoinGeckoService implements ExchangeAPI {
                 .map(SupportedCurrency::getId);
     }
 
-    private Mono<CurrencyRatesDto> fetchCurrencyRates(String quoteCurrency) {
+    private Mono<CurrencyRatesDto> fetchCurrencyRates(String quoteCurrencyId) {
         return WebClient.create(getCurrencyDetailsPath)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .build(quoteCurrency))
+                        .build(quoteCurrencyId))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(CurrencyDetails.class)
@@ -80,5 +108,25 @@ public class CoinGeckoService implements ExchangeAPI {
                                 .collect(Collectors.toList())));
     }
 
+    private ExchangeDataDto calculateExchangeDataFor(String quoteCurrency, BigDecimal baseCurrencyAmount, Rate rate) {
+        BigDecimal exchangeRate = rate.getRate();
 
+        BigDecimal feeInBaseCurrency = baseCurrencyAmount
+                .divide(new BigDecimal(100), FEE_ROUNDING_MATH_CONTEXT);
+
+        BigDecimal baseCurrencyToExchange = baseCurrencyAmount.subtract(feeInBaseCurrency);
+        BigDecimal quoteCurrencyAmount = baseCurrencyToExchange.divide(exchangeRate, AMOUNT_ROUNDING_MATH_CONTEXT);
+        BigDecimal baseCurrencyRest = baseCurrencyToExchange.subtract(quoteCurrencyAmount.multiply(exchangeRate));
+
+        return ExchangeDataDto.of(
+                rate.getBaseCurrency(),
+                quoteCurrency,
+                exchangeRate,
+                baseCurrencyAmount,
+                feeInBaseCurrency,
+                baseCurrencyToExchange,
+                quoteCurrencyAmount,
+                baseCurrencyRest
+        );
+    }
 }
