@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/currencies/")
@@ -31,7 +32,7 @@ public class CurrenciesController {
     }
 
     @PostMapping("exchange")
-    public Mono<List<ExchangeDataDto>> exchangeCurrency(@RequestBody CurrenciesToBeExchangedDto currenciesToBeExchanged) {
+    public Mono<Set<ExchangeDataDto>> exchangeCurrency(@RequestBody CurrenciesToBeExchangedDto currenciesToBeExchanged) {
         log.info("POST /currencies/exchange currenciesToBeExchanged: {}", currenciesToBeExchanged);
 
         return exchangeAPI.exchange(currenciesToBeExchanged);

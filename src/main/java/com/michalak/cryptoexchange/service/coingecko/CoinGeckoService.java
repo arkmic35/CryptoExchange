@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
@@ -53,7 +54,7 @@ public class CoinGeckoService implements ExchangeAPI {
     }
 
     @Override
-    public Mono<List<ExchangeDataDto>> exchange(CurrenciesToBeExchangedDto currenciesToBeExchanged) {
+    public Mono<Set<ExchangeDataDto>> exchange(CurrenciesToBeExchangedDto currenciesToBeExchanged) {
         String baseCurrencySymbol = currenciesToBeExchanged.getFrom();
         BigDecimal baseCurrencyAmount = currenciesToBeExchanged.getAmount();
 
@@ -67,7 +68,7 @@ public class CoinGeckoService implements ExchangeAPI {
                                 ratesDto.getQuoteCurrency(),
                                 baseCurrencyAmount,
                                 ratesDto.getRates().iterator().next()))
-                .collectList();
+                .collect(Collectors.toSet());
     }
 
     private Mono<String> fetchCurrencyId(String currencySymbol) {

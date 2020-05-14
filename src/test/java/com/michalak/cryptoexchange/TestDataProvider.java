@@ -7,6 +7,7 @@ import com.michalak.cryptoexchange.valueobject.Rate;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 public class TestDataProvider {
 
@@ -39,7 +40,7 @@ public class TestDataProvider {
             List.of("btc", "eth"),
             new BigDecimal(1000));
 
-    public static final List<ExchangeDataDto> EXCHANGE_DATA_DTOS = List.of(
+    public static final Set<ExchangeDataDto> EXCHANGE_DATA_DTOS = Set.of(
             ExchangeDataDto.of("usd", "bitcoin", new BigDecimal("9061.3"), new BigDecimal(1000), new BigDecimal(10),
                     new BigDecimal(990), new BigDecimal("0.10925584"), new BigDecimal("0.000057008")),
 

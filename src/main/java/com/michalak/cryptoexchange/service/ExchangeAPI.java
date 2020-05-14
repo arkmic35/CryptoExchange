@@ -6,6 +6,7 @@ import com.michalak.cryptoexchange.dto.ExchangeDataDto;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ExchangeAPI {
 
@@ -13,5 +14,5 @@ public interface ExchangeAPI {
 
     Mono<CurrencyRatesDto> fetchRates(String quoteCurrency, List<String> baseCurrenciesFilter);
 
-    Mono<List<ExchangeDataDto>> exchange(CurrenciesToBeExchangedDto currenciesToBeExchanged);
+    Mono<Set<ExchangeDataDto>> exchange(CurrenciesToBeExchangedDto currenciesToBeExchanged);
 }
