@@ -7,6 +7,6 @@ import java.math.BigDecimal;
 
 @Value(staticConstructor = "of")
 public class Rate {
-    @NonNull String quoteCurrency;
+    @NonNull String baseCurrency;
     @NonNull BigDecimal rate;
 }

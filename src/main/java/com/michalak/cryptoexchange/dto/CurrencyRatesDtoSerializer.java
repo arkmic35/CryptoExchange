@@ -17,12 +17,12 @@ public class CurrencyRatesDtoSerializer extends StdSerializer<CurrencyRatesDto> 
     public void serialize(CurrencyRatesDto value, JsonGenerator gen, SerializerProvider provider) throws IOException {
 
         gen.writeStartObject();
-        gen.writeStringField("source", value.getBaseCurrency());
+        gen.writeStringField("target", value.getQuoteCurrency());
 
         gen.writeObjectFieldStart("rates");
 
         for (Rate rate : value.getRates()) {
-            gen.writeNumberField(rate.getQuoteCurrency(), rate.getRate());
+            gen.writeNumberField(rate.getBaseCurrency(), rate.getRate());
         }
         gen.writeEndObject();
 

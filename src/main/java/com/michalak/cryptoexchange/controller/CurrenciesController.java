@@ -16,15 +16,15 @@ import java.util.List;
 public class CurrenciesController {
     private final ExchangeAPI exchangeAPI;
 
-    @GetMapping("{currency}")
-    public Mono<CurrencyRatesDto> getCurrency(@PathVariable("currency") String currency,
-                                              @RequestParam(value = "filter[]", required = false) List<String> quoteCurrencies) {
-        log.info("GET /currencies/{} quoteCurrencies: {}", currency, quoteCurrencies);
+    @GetMapping("{quoteCurrency}")
+    public Mono<CurrencyRatesDto> getCurrency(@PathVariable("quoteCurrency") String quoteCurrency,
+                                              @RequestParam(value = "filter[]", required = false) List<String> baseCurrenciesFilter) {
+        log.info("GET /currencies/{} baseCurrenciesFilter: {}", quoteCurrency, baseCurrenciesFilter);
 
-        if (quoteCurrencies == null) {
-            return exchangeAPI.fetchRates(currency);
+        if (baseCurrenciesFilter == null) {
+            return exchangeAPI.fetchRates(quoteCurrency);
         } else {
-            return exchangeAPI.fetchRates(currency, quoteCurrencies);
+            return exchangeAPI.fetchRates(quoteCurrency, baseCurrenciesFilter);
         }
     }
 }

@@ -20,7 +20,7 @@ public class TestDataProvider {
             ));
 
     public static final String CURRENCY_RATES_RESPONSE_JSON =
-            "{\"source\":\"bitcoin\",\"rates\":{\"usd\":9061.3,\"eth\":46.830676,\"ltc\":212.581}}";
+            "{\"target\":\"bitcoin\",\"rates\":{\"usd\":9061.3,\"eth\":46.830676,\"ltc\":212.581}}";
 
     public static final CurrencyRatesDto CURRENCY_RATES_FILTERED_DTO = CurrencyRatesDto.of(
             CURRENCY_ID,
@@ -30,6 +30,6 @@ public class TestDataProvider {
             ));
 
     public static final String CURRENCY_RATES_FILTERED_RESPONSE_JSON =
-            "{\"source\":\"bitcoin\",\"rates\":{\"usd\":9061.3,\"eth\":46.830676}}";
+            "{\"target\":\"bitcoin\",\"rates\":{\"usd\":9061.3,\"eth\":46.830676}}";
 
 }

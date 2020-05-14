@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ExchangeAPI {
 
-    Mono<CurrencyRatesDto> fetchRates(String ticker);
+    Mono<CurrencyRatesDto> fetchRates(String quoteCurrency);
 
-    Mono<CurrencyRatesDto> fetchRates(String ticker, List<String> quoteCurrencies);
+    Mono<CurrencyRatesDto> fetchRates(String quoteCurrency, List<String> baseCurrenciesFilter);
 }

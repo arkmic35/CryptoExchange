@@ -9,6 +9,6 @@ import java.util.List;
 @Value(staticConstructor = "of")
 @JsonSerialize(using = CurrencyRatesDtoSerializer.class)
 public class CurrencyRatesDto {
-    String baseCurrency;
+    String quoteCurrency;
     List<Rate> rates;
 }

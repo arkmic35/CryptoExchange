@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Log4j2
 public class CoinGeckoService implements ExchangeAPI {
-
     @Value("${coingecko.url.list.currencies}")
     private String listCurrenciesPath;
 
@@ -28,53 +27,58 @@ public class CoinGeckoService implements ExchangeAPI {
     private String getCurrencyDetailsPath;
 
     @Override
-    public Mono<CurrencyRatesDto> fetchRates(String ticker) {
-        log.debug("CoinGeckoService.fetchRates({})", ticker);
+    public Mono<CurrencyRatesDto> fetchRates(String quoteCurrency) {
+        log.debug("CoinGeckoService.fetchRates({})", quoteCurrency);
 
-        return fetchCurrencyId(ticker)
-                .flatMap(this::fetchCurrencyRates)
-                .map(currencyDetails -> CurrencyRatesDto.of(
-                        currencyDetails.getId(),
-                        currencyDetails.getRates()
-                ));
+        return fetchCurrencyId(quoteCurrency)
+                .flatMap(this::fetchCurrencyRates);
     }
 
     @Override
-    public Mono<CurrencyRatesDto> fetchRates(String ticker, List<String> quoteCurrencies) {
-        log.debug("CoinGeckoService.fetchRates({}, {})", ticker, quoteCurrencies);
+    public Mono<CurrencyRatesDto> fetchRates(String quoteCurrency, List<String> baseCurrenciesFilter) {
+        log.debug("CoinGeckoService.fetchRates({}, {})", quoteCurrency, baseCurrenciesFilter);
 
-        return fetchCurrencyId(ticker)
-                .flatMap(this::fetchCurrencyRates)
-                .map(currencyDetails -> CurrencyRatesDto.of(
-                        currencyDetails.getId(),
-                        currencyDetails.getRates()
-                                .stream()
-                                .filter(rate -> quoteCurrencies.contains(rate.getQuoteCurrency()))
-                                .collect(Collectors.toList())
-                ));
+        return fetchCurrencyId(quoteCurrency)
+                .flatMap(quoteCurrencyId -> fetchFilteredCurrencyRates(quoteCurrencyId, baseCurrenciesFilter));
     }
 
-    private Mono<String> fetchCurrencyId(String symbol) {
+    private Mono<String> fetchCurrencyId(String currencySymbol) {
         return WebClient.create(listCurrenciesPath)
                 .get()
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToFlux(SupportedCurrency.class)
-                .filter(supportedCurrency -> supportedCurrency.getSymbol().equalsIgnoreCase(symbol))
+                .filter(supportedCurrency -> supportedCurrency.getSymbol().equalsIgnoreCase(currencySymbol))
                 .collectList()
                 .filter(list -> list.size() == 1)
-                .switchIfEmpty(Mono.error(new CurrencyNotFoundException(symbol)))
+                .switchIfEmpty(Mono.error(new CurrencyNotFoundException(currencySymbol)))
                 .map(list -> list.get(0))
                 .map(SupportedCurrency::getId);
     }
 
-    private Mono<CurrencyDetails> fetchCurrencyRates(String currencyId) {
+    private Mono<CurrencyRatesDto> fetchCurrencyRates(String quoteCurrency) {
         return WebClient.create(getCurrencyDetailsPath)
                 .get()
                 .uri(uriBuilder -> uriBuilder
-                        .build(currencyId))
+                        .build(quoteCurrency))
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(CurrencyDetails.class);
+                .bodyToMono(CurrencyDetails.class)
+                .map(currencyDetails -> CurrencyRatesDto.of(
+                        currencyDetails.getId(),
+                        currencyDetails.getRates()
+                ));
     }
+
+    private Mono<CurrencyRatesDto> fetchFilteredCurrencyRates(String quoteCurrencyId, List<String> baseCurrenciesFilter) {
+        return fetchCurrencyRates(quoteCurrencyId)
+                .map(currencyRatesDto -> CurrencyRatesDto.of(
+                        currencyRatesDto.getQuoteCurrency(),
+                        currencyRatesDto.getRates()
+                                .stream()
+                                .filter(rate -> baseCurrenciesFilter.contains(rate.getBaseCurrency()))
+                                .collect(Collectors.toList())));
+    }
+
+
 }
