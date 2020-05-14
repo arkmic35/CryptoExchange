@@ -9,5 +9,5 @@ public interface ExchangeAPI {
 
     Mono<CurrencyRatesDto> fetchRates(String ticker);
 
-    CurrencyRatesDto fetchRates(String ticker, List<String> quoteCurrencies);
+    Mono<CurrencyRatesDto> fetchRates(String ticker, List<String> quoteCurrencies);
 }

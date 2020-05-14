@@ -12,6 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 import static com.michalak.cryptoexchange.TestDataProvider.*;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +29,7 @@ class CurrenciesControllerTest {
 
     @Test
     @SneakyThrows
-    public void givenEmployees_whenGetEmployees_thenReturnJsonArray() {
+    public void fetchCurrencyRatesWithoutFiltering() {
         //given
         when(exchangeAPI.fetchRates(CURRENCY_SYMBOL))
                 .thenReturn(Mono.just(CURRENCY_RATES_DTO));
@@ -37,9 +39,27 @@ class CurrenciesControllerTest {
                 .uri("/currencies/{currency}", CURRENCY_SYMBOL)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-        //then
+                //then
                 .expectStatus().isOk()
                 .expectBody()
                 .json(CURRENCY_RATES_RESPONSE_JSON);
+    }
+
+    @Test
+    @SneakyThrows
+    public void fetchCurrencyRatesWithFiltering() {
+        //given
+        when(exchangeAPI.fetchRates(CURRENCY_SYMBOL, List.of("usd", "eth")))
+                .thenReturn(Mono.just(CURRENCY_RATES_FILTERED_DTO));
+
+        //when
+        webTestClient.get()
+                .uri("/currencies/{currency}?filter[]=usd&filter[]=eth", CURRENCY_SYMBOL)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                //then
+                .expectStatus().isOk()
+                .expectBody()
+                .json(CURRENCY_RATES_FILTERED_RESPONSE_JSON);
     }
 }

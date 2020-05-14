@@ -7,6 +7,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/currencies/")
 @RequiredArgsConstructor
@@ -16,8 +18,13 @@ public class CurrenciesController {
 
     @GetMapping("{currency}")
     public Mono<CurrencyRatesDto> getCurrency(@PathVariable("currency") String currency,
-                                              @RequestParam(value = "filter[]", required = false) String[] rateFilters) {
-        log.info("GET /currencies/{} Filter: {}", currency, rateFilters);
-        return exchangeAPI.fetchRates(currency);
+                                              @RequestParam(value = "filter[]", required = false) List<String> quoteCurrencies) {
+        log.info("GET /currencies/{} quoteCurrencies: {}", currency, quoteCurrencies);
+
+        if (quoteCurrencies == null) {
+            return exchangeAPI.fetchRates(currency);
+        } else {
+            return exchangeAPI.fetchRates(currency, quoteCurrencies);
+        }
     }
 }

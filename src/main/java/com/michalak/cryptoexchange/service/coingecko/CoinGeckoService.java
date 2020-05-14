@@ -7,15 +7,18 @@ import com.michalak.cryptoexchange.service.coingecko.model.CurrencyDetails;
 import com.michalak.cryptoexchange.service.coingecko.model.SupportedCurrency;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Log4j2
 public class CoinGeckoService implements ExchangeAPI {
 
     @Value("${coingecko.url.list.currencies}")
@@ -26,6 +29,8 @@ public class CoinGeckoService implements ExchangeAPI {
 
     @Override
     public Mono<CurrencyRatesDto> fetchRates(String ticker) {
+        log.debug("CoinGeckoService.fetchRates({})", ticker);
+
         return fetchCurrencyId(ticker)
                 .flatMap(this::fetchCurrencyRates)
                 .map(currencyDetails -> CurrencyRatesDto.of(
@@ -35,8 +40,18 @@ public class CoinGeckoService implements ExchangeAPI {
     }
 
     @Override
-    public CurrencyRatesDto fetchRates(String ticker, List<String> quoteCurrencies) {
-        return null;
+    public Mono<CurrencyRatesDto> fetchRates(String ticker, List<String> quoteCurrencies) {
+        log.debug("CoinGeckoService.fetchRates({}, {})", ticker, quoteCurrencies);
+
+        return fetchCurrencyId(ticker)
+                .flatMap(this::fetchCurrencyRates)
+                .map(currencyDetails -> CurrencyRatesDto.of(
+                        currencyDetails.getId(),
+                        currencyDetails.getRates()
+                                .stream()
+                                .filter(rate -> quoteCurrencies.contains(rate.getQuoteCurrency()))
+                                .collect(Collectors.toList())
+                ));
     }
 
     private Mono<String> fetchCurrencyId(String symbol) {

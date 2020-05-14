@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.michalak.cryptoexchange.TestDataProvider.CURRENCY_RATES_DTO;
+import static com.michalak.cryptoexchange.TestDataProvider.CURRENCY_RATES_FILTERED_DTO;
 
 class CoinGeckoServiceTest {
     private MockWebServer mockCoinGeckoAPI;
@@ -68,6 +70,30 @@ class CoinGeckoServiceTest {
         //when then
         StepVerifier.create(coinGeckoService.fetchRates("btc"))
                 .expectNext(CURRENCY_RATES_DTO)
+                .verifyComplete();
+    }
+
+    @Test
+    void returnsFilteredCoinRates() {
+        //given
+        String coinsListJson = ResourceUtil.fetchResourceContents(getClass().getPackageName(), "TestCoinGeckoCoinsList.json");
+        String bitcoinDetails = ResourceUtil.fetchResourceContents(getClass().getPackageName(), "TestCoinGeckoBitcoinDetails.json");
+
+        mockCoinGeckoAPI.enqueue(
+                new MockResponse()
+                        .setBody(coinsListJson)
+                        .addHeader("Content-type", "application/json")
+        );
+
+        mockCoinGeckoAPI.enqueue(
+                new MockResponse()
+                        .setBody(bitcoinDetails)
+                        .addHeader("Content-type", "application/json")
+        );
+
+        //when then
+        StepVerifier.create(coinGeckoService.fetchRates("btc", List.of("usd", "eth")))
+                .expectNext(CURRENCY_RATES_FILTERED_DTO)
                 .verifyComplete();
     }
 
