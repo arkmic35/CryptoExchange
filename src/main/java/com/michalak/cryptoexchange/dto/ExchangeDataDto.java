@@ -14,5 +14,4 @@ public class ExchangeDataDto {
     BigDecimal fee;
     BigDecimal baseCurrencyExchangedAmount;
     BigDecimal quoteCurrencyAmount;
-    BigDecimal baseCurrencyRest;
 }

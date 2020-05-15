@@ -42,9 +42,9 @@ public class TestDataProvider {
 
     public static final Set<ExchangeDataDto> EXCHANGE_DATA_DTOS = Set.of(
             ExchangeDataDto.of("usd", "bitcoin", new BigDecimal("9061.3"), new BigDecimal(1000), new BigDecimal(10),
-                    new BigDecimal(990), new BigDecimal("0.10925584"), new BigDecimal("0.000057008")),
+                    new BigDecimal(990), new BigDecimal("0.10925584")),
 
             ExchangeDataDto.of("usd", "ethereum", new BigDecimal("200.01"), new BigDecimal(1000), new BigDecimal(10),
-                    new BigDecimal(990), new BigDecimal("4.9497525"), new BigDecimal("0.000002475"))
+                    new BigDecimal(990), new BigDecimal("4.9497525"))
     );
 }

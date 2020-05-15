@@ -105,7 +105,7 @@ public class CoinGeckoService implements ExchangeAPI {
                         currencyRatesDto.getQuoteCurrency(),
                         currencyRatesDto.getRates()
                                 .stream()
-                                .filter(rate -> baseCurrenciesFilter.contains(rate.getBaseCurrency()))
+                                .filter(rate -> currencyIsListedInFilter(rate.getBaseCurrency(), baseCurrenciesFilter))
                                 .collect(Collectors.toList())));
     }
 
@@ -117,7 +117,6 @@ public class CoinGeckoService implements ExchangeAPI {
 
         BigDecimal baseCurrencyToExchange = baseCurrencyAmount.subtract(feeInBaseCurrency);
         BigDecimal quoteCurrencyAmount = baseCurrencyToExchange.divide(exchangeRate, AMOUNT_ROUNDING_MATH_CONTEXT);
-        BigDecimal baseCurrencyRest = baseCurrencyToExchange.subtract(quoteCurrencyAmount.multiply(exchangeRate));
 
         return ExchangeDataDto.of(
                 rate.getBaseCurrency(),
@@ -126,8 +125,16 @@ public class CoinGeckoService implements ExchangeAPI {
                 baseCurrencyAmount,
                 feeInBaseCurrency,
                 baseCurrencyToExchange,
-                quoteCurrencyAmount,
-                baseCurrencyRest
+                quoteCurrencyAmount
         );
+    }
+
+    private boolean currencyIsListedInFilter(String currency, List<String> currenciesFilter) {
+        for (String filterItem : currenciesFilter) {
+            if (filterItem.equalsIgnoreCase(currency)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
